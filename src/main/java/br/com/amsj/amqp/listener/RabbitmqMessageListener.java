@@ -7,11 +7,7 @@ public class RabbitmqMessageListener implements MessageListener {
 
 	@Override
 	public void onMessage(Message message) {
-		
-		if(message == null) {
-			System.out.println("Message is null");
-		}else {
-			System.out.println("Message receive: " + new String(message.getBody()));
-		}
+
+		System.out.println("Message receive: " + new String(message.getBody()));
 	}
 }
