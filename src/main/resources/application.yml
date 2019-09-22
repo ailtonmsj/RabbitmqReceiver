@@ -1,0 +1,23 @@
+## Server port configuration
+
+server:
+  port: 7071
+
+## configuration for rabbitmq
+
+amqp:
+  configuration:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest1
+
+## queues
+
+  queue:
+    queueOne:
+      name: testQueueOne
+      durable: false
+    queueTwo:
+      name: testQueueTwo
+      durable: false

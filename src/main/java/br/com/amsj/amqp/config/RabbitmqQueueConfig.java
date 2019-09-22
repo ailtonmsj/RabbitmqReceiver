@@ -1,30 +1,37 @@
 package br.com.amsj.amqp.config;
 
 import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.QueueBuilder;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.listener.MessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import br.com.amsj.amqp.listener.RabbitmqMessageListener;
+import br.com.amsj.amqp.queuebean.QueueBeanOne;
+import br.com.amsj.amqp.queuebean.QueueBeanTwo;
 
+/**
+ * @author ailtonmsj
+ *
+ */
 @Configuration
 public class RabbitmqQueueConfig {
 	
-	public RabbitmqQueueConfig (@Value("${amqp.host}") String rabbitmqHost,
-			@Value("${amqp.port}") Integer rabbitmqPort,
-			@Value("${amqp.username}") String rabbitmqUsername,
-			@Value("${amqp.password}") String rabbitmqPassword,
-			@Value("${amqp.testQueue1}") String testQueue1) {
+	public RabbitmqQueueConfig (
+			@Value("${amqp.configuration.host}") String rabbitmqHost,
+			@Value("${amqp.configuration.port}") Integer rabbitmqPort,
+			@Value("${amqp.configuration.username}") String rabbitmqUsername,
+			@Value("${amqp.configuration.password}") String rabbitmqPassword) {
 				
 		this.rabbitmqHost = rabbitmqHost;
 		this.rabbitmqPort = rabbitmqPort;
 		this.rabbitmqUsername = rabbitmqUsername;
 		this.rabbitmqPassword = rabbitmqPassword;
-		this.testQueue1 = testQueue1;
 	}
 	
 	private final String rabbitmqHost;
@@ -32,13 +39,21 @@ public class RabbitmqQueueConfig {
 	private final String rabbitmqUsername;
 	private final String rabbitmqPassword;
 	
-	private final String testQueue1;
 	
+	@Autowired
+	private QueueBeanOne queueBeanOne;
+	
+	@Autowired
+	private QueueBeanTwo queueBeanTwo;
 	
 	@Bean
-	Queue testQueue1() {
-		final boolean isDurable = Boolean.FALSE;
-		return new Queue(testQueue1, isDurable);
+	Queue queueOne() {
+		return QueueBuilder.nonDurable(queueBeanOne.getName()).build();
+	}
+	
+	@Bean
+	Queue queueTwo() {
+		return new Queue(queueBeanTwo.getName(), queueBeanTwo.isDurable());
 	}
 	
 	@Bean
@@ -56,10 +71,8 @@ public class RabbitmqQueueConfig {
 		
 		SimpleMessageListenerContainer simpleMessageListenerContainer = new SimpleMessageListenerContainer();
 		simpleMessageListenerContainer.setConnectionFactory(connectionFactory());
-		simpleMessageListenerContainer.setQueues(testQueue1());
+		simpleMessageListenerContainer.setQueues(queueOne(), queueTwo());
 		simpleMessageListenerContainer.setMessageListener(new RabbitmqMessageListener());
 		return simpleMessageListenerContainer;
 	}
-	
-
 }
