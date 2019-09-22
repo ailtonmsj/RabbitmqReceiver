@@ -12,8 +12,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import br.com.amsj.amqp.listener.RabbitmqMessageListener;
-import br.com.amsj.amqp.queuebean.QueueBeanOne;
-import br.com.amsj.amqp.queuebean.QueueBeanTwo;
+import br.com.amsj.amqp.queuebean.QueueBeanTemplate;
 
 /**
  * @author ailtonmsj
@@ -41,19 +40,19 @@ public class RabbitmqQueueConfig {
 	
 	
 	@Autowired
-	private QueueBeanOne queueBeanOne;
+	private QueueBeanTemplate queueBeanOne;
 	
 	@Autowired
-	private QueueBeanTwo queueBeanTwo;
+	private QueueBeanTemplate queueBeanTwo;
 	
 	@Bean
 	Queue queueOne() {
-		return QueueBuilder.nonDurable(queueBeanOne.getName()).build();
+		return QueueBuilder.nonDurable(this.queueBeanOne.getName()).build();
 	}
 	
 	@Bean
 	Queue queueTwo() {
-		return new Queue(queueBeanTwo.getName(), queueBeanTwo.isDurable());
+		return new Queue(this.queueBeanTwo.getName(), this.queueBeanTwo.isDurable());
 	}
 	
 	@Bean
@@ -71,6 +70,7 @@ public class RabbitmqQueueConfig {
 		
 		SimpleMessageListenerContainer simpleMessageListenerContainer = new SimpleMessageListenerContainer();
 		simpleMessageListenerContainer.setConnectionFactory(connectionFactory());
+		// Add the queues to listen
 		simpleMessageListenerContainer.setQueues(queueOne(), queueTwo());
 		simpleMessageListenerContainer.setMessageListener(new RabbitmqMessageListener());
 		return simpleMessageListenerContainer;
