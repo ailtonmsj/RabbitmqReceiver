@@ -66,13 +66,14 @@ public class RabbitmqQueueConfig {
 	}
 	
 	@Bean
-	MessageListenerContainer messageListenerContainer() {
+	MessageListenerContainer messageListenerContainerOne() {
 		
 		SimpleMessageListenerContainer simpleMessageListenerContainer = new SimpleMessageListenerContainer();
 		simpleMessageListenerContainer.setConnectionFactory(connectionFactory());
 		// Add the queues to listen
-		simpleMessageListenerContainer.setQueues(queueOne(), queueTwo());
+		simpleMessageListenerContainer.setQueues(queueOne());
 		simpleMessageListenerContainer.setMessageListener(new RabbitmqMessageListener());
 		return simpleMessageListenerContainer;
 	}
+	
 }
